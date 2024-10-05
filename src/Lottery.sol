@@ -43,9 +43,8 @@ contract Lottery is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
     address payable private s_recentWinner;
     uint256 private s_lastLotteryTime;
     LotteryState private s_lotteryState;
-    bytes32 private constant KEY_HASH =
-        0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae;
-    uint32 private constant CALL_BACK_GAS_LIMIT = 100000;
+    bytes32 private s_keyHash;
+    uint32 private s_callBackGasLimit;
     uint16 private constant REQUEST_CONFIRMATION = 3;
     uint32 private constant NUM_WORDS = 1;
     uint256 private immutable i_subscriptionId;
@@ -57,12 +56,16 @@ contract Lottery is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         uint256 entryFee,
         uint256 interval,
         address VRF_address,
-        uint256 subscriptionId
+        uint256 subscriptionId,
+        bytes32 keyHash,
+        uint32 callBackGasLimit
     ) VRFConsumerBaseV2Plus(VRF_address) {
         i_entryFee = entryFee;
         i_interval = interval;
         s_lotteryState = LotteryState.OPEN;
         i_subscriptionId = subscriptionId;
+        s_keyHash = keyHash;
+        s_callBackGasLimit = callBackGasLimit;
         s_lastLotteryTime = block.timestamp;
     }
 
@@ -106,10 +109,10 @@ contract Lottery is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         s_lotteryState = LotteryState.LOTTERY_TIME;
         s_vrfCoordinator.requestRandomWords(
             VRFV2PlusClient.RandomWordsRequest({
-                keyHash: KEY_HASH,
+                keyHash: s_keyHash,
                 subId: i_subscriptionId,
                 requestConfirmations: REQUEST_CONFIRMATION,
-                callbackGasLimit: CALL_BACK_GAS_LIMIT,
+                callbackGasLimit: s_callBackGasLimit,
                 numWords: NUM_WORDS,
                 extraArgs: VRFV2PlusClient._argsToBytes(
                     VRFV2PlusClient.ExtraArgsV1({nativePayment: false})
@@ -133,5 +136,13 @@ contract Lottery is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         if (!success) {
             revert Lottery_TransferFailed();
         }
+    }
+
+    function getLotteryState() public view returns (LotteryState) {
+        return s_lotteryState;
+    }
+
+    function getPlayer(uint index) public view returns (address) {
+        return s_players[index];
     }
 }
