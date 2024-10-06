@@ -21,6 +21,7 @@ contract Helper is Script {
         uint256 subscriptionId;
         bytes32 keyHash;
         uint32 callBackGasLimit;
+        address account;
     }
 
     mapping(uint256 => NetworkConfig) networkConfigs;
@@ -51,7 +52,8 @@ contract Helper is Script {
             VRF_address: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
             subscriptionId: 0,
             keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
-            callBackGasLimit: 500000
+            callBackGasLimit: 500000,
+            account: 0x0cFBda0a71A3864CB108cd84b74D748eAcA49A36
         });
         return networkConfig;
     }
@@ -78,7 +80,8 @@ contract Helper is Script {
             VRF_address: address(vrfCoordinatorV2_5Mock),
             subscriptionId: subId,
             keyHash: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-            callBackGasLimit: 500000
+            callBackGasLimit: 500000,
+            account: 0x0cFBda0a71A3864CB108cd84b74D748eAcA49A36
         });
         return networkConfig;
     }
